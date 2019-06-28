@@ -1,0 +1,23 @@
+import { Directive, Input } from "@angular/core";
+import { NG_VALIDATORS, Validator, FormControl } from "@angular/forms";
+
+@Directive({
+  selector:
+    "[maxNumber][formControlName],[maxNumber][formControl],[maxNumber][ngModel]",
+  providers: [
+    { provide: NG_VALIDATORS, useExisting: MaxNumberDirective, multi: true }
+  ]
+})
+export class MaxNumberDirective implements Validator {
+  @Input() maxNumber: number;
+  @Input() maxNumberReset: boolean;
+
+  validate(ctrl: FormControl): { [key: string]: any } {
+    const inputValue = ctrl.value;
+    if (this.maxNumberReset && inputValue > this.maxNumber) {
+        ctrl.setValue(this.maxNumber);
+        return null;
+    }
+    return inputValue > this.maxNumber ? { maxNumber: true } : null;
+  }
+}
